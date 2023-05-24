@@ -1,0 +1,11 @@
+.outer {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.inner {
+  max-width: 1024px;
+}
