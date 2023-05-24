@@ -1,20 +1,21 @@
 import './App.css'
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Button, Card, ConfigProvider, Input, Layout, Space, theme, Typography} from "antd";
 import AppLayout from "./components/layout/AppLayout.tsx";
 import PeerService from "./services/peer.service.ts";
+import {Provider} from "react-redux";
+import {store, useAppSelector} from "./redux/store.ts";
+import CreateUserModal from "./components/modals/CreateUser";
+import Profile from "./components/app/Profile";
 
-function App() {
-  const [id, setId] = useState('');
-  const [inputId, setInputId] = useState('');
+function AppContent() {
+  const {profile} = useAppSelector(state => state.app);
   useEffect(() => {
-    PeerService.initialize();
-    PeerService.onConnection.addListener((conn) => {
-      console.log('connection established');
-    });
-    setId(PeerService.id);
-  }, []);
-
+    PeerService.disconnect();
+    if (profile && profile.username) {
+      PeerService.initialize(profile.username);
+    }
+  }, [profile?.username]);
   return (
     <ConfigProvider
       theme={{
@@ -22,35 +23,28 @@ function App() {
       }}
     >
       <AppLayout>
-        <Card>
-          <Typography.Title level={3}>
-            Connect
-          </Typography.Title>
-          <Typography.Paragraph>
-            Connect to other peers...
-          </Typography.Paragraph>
-          <Space direction={'vertical'} size={'middle'}>
-            <Space>
-              <Input
-                value={inputId}
-                onChange={e => setInputId(e.target.value)}
-                placeholder={'Member ID'}
-              />
-              <Button type={'primary'} onClick={() => {
-                PeerService.connect(inputId);
-              }}>
-                Connect
-              </Button>
-            </Space>
-            <div>
-              <Typography.Text>
-                Your Peer ID is: {id}
-              </Typography.Text>
-            </div>
-          </Space>
-        </Card>
+        <Profile/>
       </AppLayout>
+      <CreateUserModal/>
     </ConfigProvider>
+  );
+}
+
+function App() {
+  // const [id, setId] = useState('');
+  // const [inputId, setInputId] = useState('');
+  // useEffect(() => {
+  //   PeerService.initialize();
+  //   PeerService.onConnection.addListener((conn) => {
+  //     console.log('connection established');
+  //   });
+  //   setId(PeerService.id);
+  // }, []);
+
+  return (
+    <Provider store={store}>
+      <AppContent/>
+    </Provider>
   )
 }
 

@@ -1,0 +1,9 @@
+.connectRow {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+.inputWrapper {
+  flex: 1;
+}

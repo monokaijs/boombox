@@ -1,0 +1,25 @@
+.withAvatarRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.avatarPicker {
+  width: 64px;
+  height: 64px;
+  border: 1px solid #FFFFFF11;
+  margin-right: 16px;
+  border-radius: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+}
+
+.avatarPicker:hover {
+  background-color: #FFFFFF11;
+}
+
+.userInputWrapper {
+  flex: 1;
+}

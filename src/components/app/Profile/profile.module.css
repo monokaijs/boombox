@@ -1,0 +1,40 @@
+.profileOuter {
+  width: 360px;
+}
+
+.nameRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.userMetaInfo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid #ffffff11;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-right: 16px;
+}
+
+.name {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.username {
+  display: flex;
+  flex: 0;
+}

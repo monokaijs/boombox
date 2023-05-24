@@ -1,7 +1,6 @@
 import Peer, {DataConnection} from "peerjs";
 import {v4 as uuid} from 'uuid';
 import {Simulate} from "react-dom/test-utils";
-import error = Simulate.error;
 
 type OnConnectionListener = (conn: DataConnection) => any;
 
@@ -53,6 +52,12 @@ class PeerService {
     return new Promise(resolve => {
       this.client.listAllPeers(resolve);
     });
+  }
+
+  disconnect() {
+    if (!this.client) return;
+    this.client.disconnect();
+    this.client.destroy();
   }
 }
 
