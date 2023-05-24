@@ -2,6 +2,7 @@ import React, {useEffect} from "react";
 import {store, useAppDispatch, useAppSelector} from "../../redux/store.ts";
 import PeerService from "../../services/peer.service.ts";
 import {addPeer, Profile, removePeer, updatePeerProfile} from "../../redux/slices/app.slice.ts";
+import {message} from "antd";
 
 export default function PeerHelper() {
   const {profile, peers} = useAppSelector(state => state.app);
@@ -12,7 +13,7 @@ export default function PeerHelper() {
     if (profile && profile.username) {
       PeerService.initialize(profile.username);
       PeerService.onConnection.addListener(conn => {
-        console.log('conn', conn);
+        message.info(conn.peer + " has just connected.").then(() => null);
         dispatch(addPeer(conn.connectionId));
         conn.send(encodeURIComponent(JSON.stringify({
           action: 'profile',
