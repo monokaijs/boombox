@@ -1,13 +1,11 @@
 import './App.css'
-import React, {useEffect, useState} from "react";
-import {Button, Card, ConfigProvider, Input, Layout, Space, theme, Typography} from "antd";
+import React from "react";
+import {Card, ConfigProvider, Space, theme} from "antd";
 import AppLayout from "./components/layout/AppLayout.tsx";
-import PeerService from "./services/peer.service.ts";
 import {Provider} from "react-redux";
-import {store, useAppDispatch, useAppSelector} from "./redux/store.ts";
+import {store} from "./redux/store.ts";
 import CreateUserModal from "./components/modals/CreateUser";
 import ProfileCard from "./components/app/Profile";
-import {addPeer, Profile, removePeer, updatePeerProfile} from "./redux/slices/app.slice.ts";
 import PeerHelper from "./components/helpers/PeerHelper.tsx";
 
 function AppContent() {
@@ -19,7 +17,10 @@ function AppContent() {
     >
       <PeerHelper/>
       <AppLayout>
-        <ProfileCard/>
+        <Space direction={'vertical'}>
+          <ProfileCard/>
+
+        </Space>
       </AppLayout>
       <CreateUserModal/>
     </ConfigProvider>
