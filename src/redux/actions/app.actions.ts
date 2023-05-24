@@ -6,6 +6,6 @@ export const setAppProfile = createAsyncThunk('app/set-profile', (profile: Profi
   const randomNumber = ~~(Math.random() * 99999);
   return {
     ...profile,
-    username: slugify(profile.name) + '-' + randomNumber
+    username: slugify(profile.name as string) + '-' + randomNumber
   }
 });

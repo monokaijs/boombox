@@ -1,6 +1,5 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {setAppProfile} from "../actions/app.actions.ts";
-import PeerService from "../../services/peer.service.ts";
 
 export interface Profile {
   name?: string;
