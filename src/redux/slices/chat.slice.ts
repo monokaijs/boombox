@@ -21,6 +21,9 @@ export const chatSlice = createSlice({
   reducers: {
     addMessage(state, action: PayloadAction<ChatMessage>) {
       state.messages.push(action.payload);
+      if (state.messages.length > 20) {
+        state.messages = state.messages.slice(state.messages.length - 20);
+      }
     }
   },
   extraReducers: builder => {
