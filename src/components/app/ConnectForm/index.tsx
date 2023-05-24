@@ -6,7 +6,6 @@ import PeerService from "../../../services/peer.service.ts";
 export default function ConnectForm() {
   const [form] = Form.useForm();
   const onFinish = (values: any) => {
-    console.log('values', values);
     PeerService.connect(values.peerId)
   }
   return (

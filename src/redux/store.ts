@@ -8,13 +8,13 @@ import {appSlice, AppState} from "./slices/app.slice.ts";
 const rootPersistConfig = {
   key: 'root',
   storage,
-  blacklist: [],
+  blacklist: ['app'],
   stateReconciler: autoMergeLevel2,
 };
 const appPersistConfig = {
   key: 'app',
   storage,
-  blacklist: ['appLoading'],
+  blacklist: ['appLoading', 'peers'],
   stateReconciler: autoMergeLevel2,
 };
 

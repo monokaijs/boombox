@@ -1,8 +1,9 @@
 import Peer, {DataConnection} from "peerjs";
 import {v4 as uuid} from 'uuid';
-import {Simulate} from "react-dom/test-utils";
 
 type OnConnectionListener = (conn: DataConnection) => any;
+type OnDataListener = (data: any, conn: DataConnection) => any;
+type OnCloseListener = (conn: DataConnection) => any;
 
 class PeerService {
   client: Peer;
@@ -17,13 +18,45 @@ class PeerService {
     }
   }
 
+  onData: {
+    listeners: OnDataListener[],
+    addListener: (fn: OnDataListener) => any
+  } = {
+    listeners: [],
+    addListener: (fn) => {
+      this.onData.listeners.push(fn);
+    }
+  }
+
+  onClose: {
+    listeners: OnCloseListener[],
+    addListener: (fn: OnCloseListener) => any
+  } = {
+    listeners: [],
+    addListener: (fn) => {
+      this.onClose.listeners.push(fn);
+    }
+  }
+
   initialize(id?: string) {
     if (!id) id = uuid();
     this.id = id;
     this.client = new Peer(id);
 
     this.client.on("connection", (conn) => {
-      this.onConnection.listeners.forEach(fn => fn(conn));
+      conn.on('open', () => {
+        this.onConnection.listeners.forEach(fn => fn(conn));
+      });
+      // other client connected
+      conn.on("data", (data) => {
+        this.onData.listeners.forEach(fn => fn(data, conn));
+      });
+      conn.on("close", () => {
+        this.onClose.listeners.forEach(fn => fn(conn));
+      });
+      conn.on("error", () => {
+        this.onClose.listeners.forEach(fn => fn(conn));
+      })
     });
 
     this.client.on("error", error => {
@@ -32,20 +65,20 @@ class PeerService {
   }
 
   connect(peerId: string) {
-    console.log('connecting', peerId);
     const conn = this.client.connect(peerId);
     conn.on("open", () => {
-      console.log("connection opened");
+      this.onConnection.listeners.forEach(fn => fn(conn));
     });
     conn.on("data", (data) => {
-      console.log("Received data", data);
+      this.onData.listeners.forEach(fn => fn(data, conn));
     });
     conn.on("error", () => {
-      console.log("error");
+      this.onClose.listeners.forEach(fn => fn(conn));
     });
     conn.on("close", () => {
-      console.log("close");
+      this.onClose.listeners.forEach(fn => fn(conn))
     });
+    return conn;
   }
 
   getConnections() {
@@ -56,6 +89,8 @@ class PeerService {
 
   disconnect() {
     if (!this.client) return;
+    this.onConnection.listeners = [];
+    this.onData.listeners = [];
     this.client.disconnect();
     this.client.destroy();
   }
