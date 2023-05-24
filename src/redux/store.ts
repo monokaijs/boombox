@@ -5,11 +5,12 @@ import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 import storage from 'redux-persist/lib/storage'
 import {appSlice, AppState} from "./slices/app.slice.ts";
 import {playerSlice, PlayerState} from "./slices/player.slice.ts";
+import {chatSlice, ChatState} from "./slices/chat.slice.ts";
 
 const rootPersistConfig = {
   key: 'root',
   storage,
-  blacklist: ['app', 'player'],
+  blacklist: ['app', 'player', 'chat'],
   stateReconciler: autoMergeLevel2,
 };
 const appPersistConfig = {
@@ -22,6 +23,7 @@ const appPersistConfig = {
 const persistedReducer = persistReducer<any>(rootPersistConfig, combineReducers({
   app: persistReducer<any>(appPersistConfig, appSlice.reducer),
   playerSlice: playerSlice.reducer,
+  chat: chatSlice.reducer,
 }));
 
 
@@ -37,6 +39,7 @@ export const store = configureStore({
 export type RootState = {
   app: AppState,
   player: PlayerState,
+  chat: ChatState,
 };
 export type AppDispatch = typeof store.dispatch;
 

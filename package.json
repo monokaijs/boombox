@@ -16,6 +16,7 @@
     "@types/uuid": "^9.0.1",
     "antd": "^5.5.1",
     "emoji-picker-react": "^4.4.9",
+    "moment": "^2.29.4",
     "peerjs": "^1.4.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

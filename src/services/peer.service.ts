@@ -8,6 +8,7 @@ type OnCloseListener = (conn: DataConnection) => any;
 class PeerService {
   client: Peer;
   id: string;
+  connections: DataConnection[] = [];
   onConnection: {
     listeners: OnConnectionListener[],
     addListener: (fn: OnConnectionListener) => any
@@ -46,6 +47,7 @@ class PeerService {
     this.client.on("connection", (conn) => {
       conn.on('open', () => {
         this.onConnection.listeners.forEach(fn => fn(conn));
+        this.addConnection(conn);
       });
       // other client connected
       conn.on("data", (data) => {
@@ -53,9 +55,11 @@ class PeerService {
       });
       conn.on("close", () => {
         this.onClose.listeners.forEach(fn => fn(conn));
+        this.removeConnection(conn);
       });
       conn.on("error", () => {
         this.onClose.listeners.forEach(fn => fn(conn));
+        this.removeConnection(conn);
       })
     });
 
@@ -64,9 +68,20 @@ class PeerService {
     });
   }
 
+  addConnection(connection: DataConnection) {
+    if (!this.connections.find(x => x.connectionId === connection.connectionId)) {
+      this.connections.push(connection);
+    }
+  }
+
+  removeConnection(connection: DataConnection) {
+    this.connections = this.connections.filter(conn => conn.connectionId !== connection.connectionId);
+  }
+
   connect(peerId: string) {
     const conn = this.client.connect(peerId);
     conn.on("open", () => {
+      this.addConnection(conn);
       this.onConnection.listeners.forEach(fn => fn(conn));
     });
     conn.on("data", (data) => {
@@ -74,9 +89,11 @@ class PeerService {
     });
     conn.on("error", () => {
       this.onClose.listeners.forEach(fn => fn(conn));
+      this.removeConnection(conn);
     });
     conn.on("close", () => {
-      this.onClose.listeners.forEach(fn => fn(conn))
+      this.onClose.listeners.forEach(fn => fn(conn));
+      this.removeConnection(conn);
     });
     return conn;
   }
@@ -85,6 +102,12 @@ class PeerService {
     return new Promise(resolve => {
       this.client.listAllPeers(resolve);
     });
+  }
+
+  sendAll(message: any) {
+    for (let conn of this.connections) {
+      conn.send(message);
+    }
   }
 
   disconnect() {

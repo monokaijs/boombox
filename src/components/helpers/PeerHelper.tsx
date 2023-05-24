@@ -3,6 +3,7 @@ import {store, useAppDispatch, useAppSelector} from "../../redux/store.ts";
 import PeerService from "../../services/peer.service.ts";
 import {addPeer, Profile, removePeer, updatePeerProfile} from "../../redux/slices/app.slice.ts";
 import {message} from "antd";
+import {addMessage} from "../../redux/slices/chat.slice.ts";
 
 export default function PeerHelper() {
   const {profile, peers} = useAppSelector(state => state.app);
@@ -43,6 +44,9 @@ export default function PeerHelper() {
                 PeerService.connect(peer.username);
               }
             });
+            break;
+          case 'message':
+            dispatch(addMessage(parsedData.data))
             break;
         }
       });
