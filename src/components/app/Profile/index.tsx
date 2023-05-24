@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Alert, Button, Card, Divider, List, Modal, Tag, Typography} from "antd";
+import {Alert, Button, Card, Divider, List, Modal, Tag, Tooltip, Typography} from "antd";
 import styles from "./profile.module.css";
 import {useAppSelector} from "../../../redux/store.ts";
 import {LogoutOutlined} from "@ant-design/icons";
@@ -18,14 +18,20 @@ export default function ProfileCard() {
           <Typography.Text className={styles.name}>
             {profile?.name}
           </Typography.Text>
-          <Tag
-            className={styles.username}
-            onClick={() => {
-
-            }}
+          <Tooltip
+            trigger={'click'}
+            title={'Copied!'}
           >
-            {profile?.username}
-          </Tag>
+            <Tag
+              style={{cursor: 'pointer'}}
+              className={styles.username}
+              onClick={() => {
+                navigator.clipboard.writeText(profile?.username as string).then(() => null);
+              }}
+            >
+              {profile?.username}
+            </Tag>
+          </Tooltip>
         </div>
         <div>
           <Button shape={'circle'}>
