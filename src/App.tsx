@@ -3,10 +3,11 @@ import React from "react";
 import {Card, ConfigProvider, Space, theme} from "antd";
 import AppLayout from "./components/layout/AppLayout.tsx";
 import {Provider} from "react-redux";
-import {store} from "./redux/store.ts";
+import {store, useAppSelector} from "./redux/store.ts";
 import CreateUserModal from "./components/modals/CreateUser";
 import ProfileCard from "./components/app/Profile";
 import PeerHelper from "./components/helpers/PeerHelper.tsx";
+import ChatBox from "./components/app/Chatbox";
 
 function AppContent() {
   return (
@@ -19,7 +20,7 @@ function AppContent() {
       <AppLayout>
         <Space direction={'vertical'}>
           <ProfileCard/>
-
+          <ChatBox/>
         </Space>
       </AppLayout>
       <CreateUserModal/>

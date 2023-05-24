@@ -5,3 +5,23 @@ body {
 html, body, #root {
   height: 100%;
 }
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #FFFFFF11;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #FFFFFF22;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
