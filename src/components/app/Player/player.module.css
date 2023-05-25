@@ -5,6 +5,11 @@
   flex-direction: column;
 }
 
+.listWrapper {
+  height: 344px;
+  overflow-y: scroll;
+}
+
 .playerWrapper {
   height: 400px;
   width: 100%;
