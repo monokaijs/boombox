@@ -22,7 +22,7 @@ const appPersistConfig = {
 
 const persistedReducer = persistReducer<any>(rootPersistConfig, combineReducers({
   app: persistReducer<any>(appPersistConfig, appSlice.reducer),
-  playerSlice: playerSlice.reducer,
+  player: playerSlice.reducer,
   chat: chatSlice.reducer,
 }));
 

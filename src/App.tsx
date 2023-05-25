@@ -8,6 +8,7 @@ import CreateUserModal from "./components/modals/CreateUser";
 import ProfileCard from "./components/app/Profile";
 import PeerHelper from "./components/helpers/PeerHelper.tsx";
 import ChatBox from "./components/app/Chatbox";
+import PlayerCard from "./components/app/Player";
 
 function AppContent() {
   return (
@@ -18,6 +19,9 @@ function AppContent() {
     >
       <PeerHelper/>
       <AppLayout>
+        <div style={{flex: 1}}>
+          <PlayerCard/>
+        </div>
         <Space direction={'vertical'}>
           <ProfileCard/>
           <ChatBox/>
