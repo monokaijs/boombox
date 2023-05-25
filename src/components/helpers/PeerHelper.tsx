@@ -5,7 +5,7 @@ import {addPeer, Profile, removePeer, updatePeerProfile} from "../../redux/slice
 import {message} from "antd";
 import {addMessage} from "../../redux/slices/chat.slice.ts";
 import {enqueueTrack} from "../../redux/actions/player.actions.ts";
-import {syncQueue} from "../../redux/slices/player.slice.ts";
+import {syncPlayer, syncQueue, updatePlayer} from "../../redux/slices/player.slice.ts";
 
 export default function PeerHelper() {
   const {profile, peers} = useAppSelector(state => state.app);
@@ -16,7 +16,7 @@ export default function PeerHelper() {
     if (profile && profile.username) {
       PeerService.initialize(profile.username);
       PeerService.onConnection.addListener((conn, isIncoming) => {
-        if (isIncoming) message.info(conn.peer + " has just connected.").then(() => null);
+        const {currentTrack, currentTrackTime} = store.getState().player;
         dispatch(addPeer(conn.connectionId));
         conn.send(encodeURIComponent(JSON.stringify({
           action: 'profile',
@@ -30,6 +30,17 @@ export default function PeerHelper() {
           action: 'queue',
           data: store.getState().player.queue
         })));
+        if (isIncoming) {
+          message.info(conn.peer + " has just connected.").then(() => null);
+          // TODO: send playing progress
+          conn.send(encodeURIComponent(JSON.stringify({
+            action: 'sync-player',
+            data: {
+              currentTrack,
+              currentTrackTime,
+            }
+          })));
+        }
       });
       PeerService.onData.addListener((data, conn) => {
         const parsedData = JSON.parse(decodeURIComponent(data));
@@ -59,6 +70,12 @@ export default function PeerHelper() {
             break;
           case 'queue':
             dispatch(syncQueue(parsedData.data));
+            break;
+          case 'sync-player':
+            dispatch(syncPlayer(parsedData.data));
+            break;
+          case 'update-player':
+            dispatch(updatePlayer(parsedData.data));
             break;
         }
       });

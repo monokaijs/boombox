@@ -1,5 +1,6 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {enqueueTrack} from "../actions/player.actions.ts";
+import YouTube from "react-youtube";
 
 export interface Track {
   id: string;
@@ -11,11 +12,15 @@ export interface Track {
 }
 
 export interface PlayerState {
-  queue: Track[]
+  queue: Track[];
+  currentTrack?: string;
+  currentTrackTime?: number;
+  state: number;
 }
 
 const initialState: PlayerState = {
-  queue: []
+  queue: [],
+  state: 0,
 };
 
 export const playerSlice = createSlice({
@@ -31,17 +36,42 @@ export const playerSlice = createSlice({
       state.queue = state.queue.sort((a, b) => {
         return a.creationTime - b.creationTime;
       })
+    },
+    syncPlayer(state, action) {
+      if (action.payload.currentTrack) state.currentTrack = action.payload.currentTrack;
+      if (action.payload.currentTrackTime) state.currentTrackTime = action.payload.currentTrackTime;
+      if (action.payload.state) state.state = action.payload.state;
+    },
+    updatePlayer(state, action) {
+      state.state = action.payload;
+    },
+    moveToNextTrack(state) {
+      state.currentTrackTime = 0;
+      const currentIndex = state.queue.findIndex(t => t.id === state.currentTrack);
+      if (currentIndex === state.queue.length - 1) {
+        // end of queue, move to first
+        state.currentTrack = state.queue[0].id;
+      } else {
+        state.currentTrack = state.queue[currentIndex + 1].id;
+      }
     }
   },
   extraReducers: builder => {
     builder.addCase(enqueueTrack.fulfilled, (state, action) => {
       state.queue.push(action.payload);
+      if (state.queue.length === 1) {
+        state.currentTrack = action.payload.id;
+        state.currentTrackTime = 0;
+      }
     });
   }
 });
 
 export const {
-  syncQueue
+  syncQueue,
+  syncPlayer,
+  moveToNextTrack,
+  updatePlayer,
 } = playerSlice.actions;
 
 export default playerSlice.reducer;

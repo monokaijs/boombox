@@ -1,7 +1,6 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import {Track} from "../slices/player.slice.ts";
 import YoutubeService from "../../services/youtube.service.ts";
-import {v4 as uuidv4} from "uuid";
 
 export const prepareTrack = async (youtubeUrl: string) => {
   const youtubeId = YoutubeService.parseYtbLink(youtubeUrl);
