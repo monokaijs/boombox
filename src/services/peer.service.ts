@@ -1,7 +1,7 @@
 import Peer, {DataConnection} from "peerjs";
 import {v4 as uuid} from 'uuid';
 
-type OnConnectionListener = (conn: DataConnection) => any;
+type OnConnectionListener = (conn: DataConnection, isIncoming: boolean) => any;
 type OnDataListener = (data: any, conn: DataConnection) => any;
 type OnCloseListener = (conn: DataConnection) => any;
 
@@ -45,11 +45,11 @@ class PeerService {
     this.client = new Peer(id);
 
     this.client.on("connection", (conn) => {
+      // other client connected
       conn.on('open', () => {
-        this.onConnection.listeners.forEach(fn => fn(conn));
+        this.onConnection.listeners.forEach(fn => fn(conn, true));
         this.addConnection(conn);
       });
-      // other client connected
       conn.on("data", (data) => {
         this.onData.listeners.forEach(fn => fn(data, conn));
       });
@@ -82,7 +82,7 @@ class PeerService {
     const conn = this.client.connect(peerId);
     conn.on("open", () => {
       this.addConnection(conn);
-      this.onConnection.listeners.forEach(fn => fn(conn));
+      this.onConnection.listeners.forEach(fn => fn(conn, false));
     });
     conn.on("data", (data) => {
       this.onData.listeners.forEach(fn => fn(data, conn));

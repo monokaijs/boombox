@@ -15,8 +15,8 @@ export default function PeerHelper() {
     PeerService.disconnect();
     if (profile && profile.username) {
       PeerService.initialize(profile.username);
-      PeerService.onConnection.addListener(conn => {
-        message.info(conn.peer + " has just connected.").then(() => null);
+      PeerService.onConnection.addListener((conn, isIncoming) => {
+        if (isIncoming) message.info(conn.peer + " has just connected.").then(() => null);
         dispatch(addPeer(conn.connectionId));
         conn.send(encodeURIComponent(JSON.stringify({
           action: 'profile',
