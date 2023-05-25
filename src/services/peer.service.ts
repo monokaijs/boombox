@@ -80,22 +80,28 @@ class PeerService {
 
   connect(peerId: string) {
     const conn = this.client.connect(peerId);
-    conn.on("open", () => {
-      this.addConnection(conn);
-      this.onConnection.listeners.forEach(fn => fn(conn, false));
+    return new Promise((resolve, reject) => {
+      conn.on("open", () => {
+        this.addConnection(conn);
+        this.onConnection.listeners.forEach(fn => fn(conn, false));
+        resolve(conn);
+      });
+      conn.on("data", (data) => {
+        this.onData.listeners.forEach(fn => fn(data, conn));
+      });
+      conn.on("error", () => {
+        this.onClose.listeners.forEach(fn => fn(conn));
+        this.removeConnection(conn);
+        reject(conn);
+      });
+      conn.on("close", () => {
+        this.onClose.listeners.forEach(fn => fn(conn));
+        this.removeConnection(conn);
+      });
+      this.client.on("error", () => {
+        reject();
+      })
     });
-    conn.on("data", (data) => {
-      this.onData.listeners.forEach(fn => fn(data, conn));
-    });
-    conn.on("error", () => {
-      this.onClose.listeners.forEach(fn => fn(conn));
-      this.removeConnection(conn);
-    });
-    conn.on("close", () => {
-      this.onClose.listeners.forEach(fn => fn(conn));
-      this.removeConnection(conn);
-    });
-    return conn;
   }
 
   getConnections() {

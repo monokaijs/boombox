@@ -58,7 +58,7 @@ export default function PeerHelper() {
             peersList.forEach((peer: Profile) => {
               if (!peer || !peer.username) return;
               if (!connectedPeers.find((p: Profile) => p.username === peer.username)) {
-                PeerService.connect(peer.username);
+                PeerService.connect(peer.username).then(() => null);
               }
             });
             break;
