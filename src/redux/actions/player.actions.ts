@@ -1,14 +1,20 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
-import YoutubeService from "../../services/youtube.service.ts";
 import {Track} from "../slices/player.slice.ts";
+import YoutubeService from "../../services/youtube.service.ts";
+import {v4 as uuidv4} from "uuid";
 
-export const enqueueTrack = createAsyncThunk<Track, string, any>('player/enqueue', async (youtubeUrl: string) => {
+export const prepareTrack = async (youtubeUrl: string) => {
   const youtubeId = YoutubeService.parseYtbLink(youtubeUrl);
-  const info = await fetch(`https://downloader.freemake.com/api/videoinfo/` + youtubeId).then(r => r.json());
+  const info = await fetch(`https://ytb-video-finder.vercel.app/api/` + youtubeId).then(r => r.json());
   return {
     id: youtubeId as string,
     picture: `https://img.youtube.com/vi/${youtubeId}/default.jpg`,
-    title: info.metaInfo.title,
-    duration: info.metaInfo.duration
+    title: info.title,
+    duration: parseInt(info.lengthSeconds),
+    creationTime: new Date().getTime(),
   }
+}
+
+export const enqueueTrack = createAsyncThunk<Track, Track, any>('player/enqueue', async (track: Track, thunkAPI) => {
+  return track;
 });

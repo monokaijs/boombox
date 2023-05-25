@@ -4,6 +4,8 @@ import PeerService from "../../services/peer.service.ts";
 import {addPeer, Profile, removePeer, updatePeerProfile} from "../../redux/slices/app.slice.ts";
 import {message} from "antd";
 import {addMessage} from "../../redux/slices/chat.slice.ts";
+import {enqueueTrack} from "../../redux/actions/player.actions.ts";
+import {syncQueue} from "../../redux/slices/player.slice.ts";
 
 export default function PeerHelper() {
   const {profile, peers} = useAppSelector(state => state.app);
@@ -23,6 +25,10 @@ export default function PeerHelper() {
         conn.send(encodeURIComponent(JSON.stringify({
           action: 'peers',
           data: store.getState().app.peers
+        })));
+        conn.send(encodeURIComponent(JSON.stringify({
+          action: 'queue',
+          data: store.getState().player.queue
         })));
       });
       PeerService.onData.addListener((data, conn) => {
@@ -46,7 +52,13 @@ export default function PeerHelper() {
             });
             break;
           case 'message':
-            dispatch(addMessage(parsedData.data))
+            dispatch(addMessage(parsedData.data));
+            break;
+          case 'enqueue':
+            dispatch(enqueueTrack(parsedData.data));
+            break;
+          case 'queue':
+            dispatch(syncQueue(parsedData.data));
             break;
         }
       });

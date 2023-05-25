@@ -6,6 +6,8 @@ export interface Track {
   title: string;
   picture: string;
   duration: number;
+  source?: string;
+  creationTime: number;
 }
 
 export interface PlayerState {
@@ -20,6 +22,16 @@ export const playerSlice = createSlice({
   name: 'player',
   initialState,
   reducers: {
+    syncQueue(state, action: PayloadAction<Track[]>) {
+      action.payload.forEach(track => {
+        if (!state.queue.find(x => x.id === track.id)) {
+          state.queue.push(track);
+        }
+      });
+      state.queue = state.queue.sort((a, b) => {
+        return a.creationTime - b.creationTime;
+      })
+    }
   },
   extraReducers: builder => {
     builder.addCase(enqueueTrack.fulfilled, (state, action) => {
@@ -29,6 +41,7 @@ export const playerSlice = createSlice({
 });
 
 export const {
+  syncQueue
 } = playerSlice.actions;
 
 export default playerSlice.reducer;
