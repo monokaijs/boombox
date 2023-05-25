@@ -1,13 +1,16 @@
 import React, {useState} from "react";
 import {Alert, Button, Card, Divider, List, Modal, Tag, Tooltip, Typography} from "antd";
 import styles from "./profile.module.css";
-import {useAppSelector} from "../../../redux/store.ts";
+import {useAppDispatch, useAppSelector} from "../../../redux/store.ts";
 import {LogoutOutlined} from "@ant-design/icons";
 import ConnectForm from "../ConnectForm";
+import {signOutProfile} from "../../../redux/slices/app.slice.ts";
+import PeerService from "../../../services/peer.service.ts";
 
 export default function ProfileCard() {
   const {profile, peers} = useAppSelector(state => state.app);
   const [peersModal, setPeersModal] = useState(false);
+  const dispatch = useAppDispatch();
   return (
     <Card className={styles.profileOuter}>
       <div className={styles.nameRow}>
@@ -34,7 +37,10 @@ export default function ProfileCard() {
           </Tooltip>
         </div>
         <div>
-          <Button shape={'circle'}>
+          <Button shape={'circle'} onClick={() => {
+            PeerService.disconnect();
+            dispatch(signOutProfile());
+          }}>
             <LogoutOutlined />
           </Button>
         </div>

@@ -31,6 +31,9 @@ export const appSlice = createSlice({
   name: 'app',
   initialState,
   reducers: {
+    signOutProfile(state) {
+      state.profile = undefined;
+    },
     addPeer(state, action: PayloadAction<string>) {
       const peerId = action.payload;
       if (!state.peers.find(peer => peer.username === peerId)) {
@@ -67,6 +70,7 @@ export const {
   addPeer,
   updatePeerProfile,
   removePeer,
+  signOutProfile,
 } = appSlice.actions;
 
 export default appSlice.reducer;
