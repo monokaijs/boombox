@@ -5,7 +5,7 @@ import {DeleteOutlined, PlayCircleOutlined} from "@ant-design/icons";
 import EnqueueInput from "./EnqueueInput.tsx";
 import {useAppDispatch, useAppSelector} from "../../../redux/store.ts";
 import moment from "moment";
-import {syncPlayer, updatePlayer} from "../../../redux/slices/player.slice.ts";
+import {removeTrack, syncPlayer, updatePlayer} from "../../../redux/slices/player.slice.ts";
 import peerService from "../../../services/peer.service.ts";
 
 export default function QueueCard() {
@@ -38,7 +38,13 @@ export default function QueueCard() {
             </Tag>
           </div>
           <div className={styles.controls}>
-            <Button shape={'circle'} type={'text'} danger>
+            <Button shape={'circle'} type={'text'} danger onClick={() => {
+              dispatch(removeTrack(item.id));
+              peerService.sendAll(encodeURIComponent(JSON.stringify({
+                action: 'remove-track',
+                data: item.id,
+              })));
+            }}>
               <DeleteOutlined/>
             </Button>
             <Button shape={'circle'} type={'text'} onClick={() => {

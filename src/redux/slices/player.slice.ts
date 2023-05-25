@@ -54,6 +54,19 @@ export const playerSlice = createSlice({
       } else {
         state.currentTrack = state.queue[currentIndex + 1].id;
       }
+    },
+    removeTrack(state, action: PayloadAction<string>) {
+      if (state.currentTrack === action.payload) {
+        // move to next track
+        const curIndex = state.queue.findIndex(t => t.id === state.currentTrack);
+        if (curIndex === state.queue.length - 1) {
+          // end of queue, move to first
+          state.currentTrack = state.queue[0].id;
+        } else {
+          state.currentTrack = state.queue[curIndex + 1].id;
+        }
+      }
+      state.queue = state.queue.filter(item => item.id !== action.payload);
     }
   },
   extraReducers: builder => {
@@ -72,6 +85,7 @@ export const {
   syncPlayer,
   moveToNextTrack,
   updatePlayer,
+  removeTrack,
 } = playerSlice.actions;
 
 export default playerSlice.reducer;

@@ -5,7 +5,7 @@ import {addPeer, Profile, removePeer, updatePeerProfile} from "../../redux/slice
 import {message} from "antd";
 import {addMessage} from "../../redux/slices/chat.slice.ts";
 import {enqueueTrack} from "../../redux/actions/player.actions.ts";
-import {syncPlayer, syncQueue, updatePlayer} from "../../redux/slices/player.slice.ts";
+import {removeTrack, syncPlayer, syncQueue, updatePlayer} from "../../redux/slices/player.slice.ts";
 
 export default function PeerHelper() {
   const {profile, peers} = useAppSelector(state => state.app);
@@ -32,7 +32,6 @@ export default function PeerHelper() {
         })));
         if (isIncoming) {
           message.info(conn.peer + " has just connected.").then(() => null);
-          // TODO: send playing progress
           conn.send(encodeURIComponent(JSON.stringify({
             action: 'sync-player',
             data: {
@@ -76,6 +75,9 @@ export default function PeerHelper() {
             break;
           case 'update-player':
             dispatch(updatePlayer(parsedData.data));
+            break;
+          case 'remove-track':
+            dispatch(removeTrack(parsedData.data));
             break;
         }
       });

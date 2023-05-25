@@ -28,9 +28,7 @@ export default function PlayerCard() {
       const parsedData = JSON.parse(decodeURIComponent(data));
       if (parsedData.action === 'sync-player' && parsedData.data.timestamp > lastInteract) {
         const trackTime = await player.current?.internalPlayer.getCurrentTime();
-        console.log(parsedData.data.currentTrackTime, trackTime);
         const timeDiff = Math.abs(parsedData.data.currentTrackTime as number - trackTime);
-        console.log('diff', timeDiff);
         if (timeDiff > 5) {
           player.current?.internalPlayer.seekTo(parsedData.data.currentTrackTime);
         }
