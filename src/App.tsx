@@ -1,6 +1,6 @@
 import './App.css'
 import React from "react";
-import {Card, ConfigProvider, Space, theme} from "antd";
+import {Card, Col, ConfigProvider, Row, Space, theme} from "antd";
 import AppLayout from "./components/layout/AppLayout.tsx";
 import {Provider} from "react-redux";
 import {store, useAppSelector} from "./redux/store.ts";
@@ -19,13 +19,17 @@ function AppContent() {
     >
       <PeerHelper/>
       <AppLayout>
-        <div style={{flex: 1}}>
-          <PlayerCard/>
-        </div>
-        <Space direction={'vertical'}>
-          <ProfileCard/>
-          <ChatBox/>
-        </Space>
+        <Row gutter={8}>
+          <Col xs={24} sm={24} md={16}>
+            <PlayerCard/>
+          </Col>
+          <Col xs={24} sm={24} md={8}>
+            <Space direction={'vertical'} style={{width: '100%'}}>
+              <ProfileCard/>
+              <ChatBox/>
+            </Space>
+          </Col>
+        </Row>
       </AppLayout>
       <CreateUserModal/>
     </ConfigProvider>

@@ -37,7 +37,6 @@ export default function ChatBox() {
 
   return (
     <Card
-      style={{width: 360}}
       bodyStyle={{height: 500, padding: 0, display: 'flex', flexDirection: 'column'}}
       title={'Live chat'}
     >

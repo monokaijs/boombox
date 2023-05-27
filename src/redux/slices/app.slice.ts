@@ -6,6 +6,8 @@ export interface Profile {
   icon?: string;
   username?: string;
   connectionId: string;
+  hasVoice?: string;
+  muted?: boolean;
 }
 
 export interface AppState {
@@ -16,6 +18,7 @@ export interface AppState {
   },
   profile?: Profile;
   peers: Profile[];
+  voicePermitted: boolean;
 }
 
 const initialState: AppState = {
@@ -25,6 +28,7 @@ const initialState: AppState = {
     createAccount: true,
   },
   peers: [],
+  voicePermitted: false
 };
 
 export const appSlice = createSlice({
