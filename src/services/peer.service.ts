@@ -116,6 +116,10 @@ class PeerService {
     }
   }
 
+  sendAllEncoded(message: any) {
+    this.sendAll(encodeURIComponent(JSON.stringify(message)))
+  }
+
   disconnect() {
     if (!this.client) return;
     this.onConnection.listeners = [];

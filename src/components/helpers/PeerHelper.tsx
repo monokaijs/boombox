@@ -8,7 +8,7 @@ import {enqueueTrack} from "../../redux/actions/player.actions.ts";
 import {removeTrack, syncPlayer, syncQueue, updatePlayer} from "../../redux/slices/player.slice.ts";
 
 export default function PeerHelper() {
-  const {profile, peers} = useAppSelector(state => state.app);
+  const {profile, peers, voicePermitted} = useAppSelector(state => state.app);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -20,7 +20,10 @@ export default function PeerHelper() {
         dispatch(addPeer(conn.connectionId));
         conn.send(encodeURIComponent(JSON.stringify({
           action: 'profile',
-          data: profile
+          data: {
+            ...profile,
+            hasVoice: voicePermitted,
+          }
         })));
         conn.send(encodeURIComponent(JSON.stringify({
           action: 'peers',
@@ -43,12 +46,11 @@ export default function PeerHelper() {
       });
       PeerService.onData.addListener((data, conn) => {
         const parsedData = JSON.parse(decodeURIComponent(data));
-        console.log('data', parsedData);
         switch (parsedData.action) {
           case 'profile':
             dispatch(updatePeerProfile({
               profile: parsedData.data,
-              connectionId: conn.connectionId
+              connectionId: conn.connectionId,
             }));
             break;
           case 'peers':

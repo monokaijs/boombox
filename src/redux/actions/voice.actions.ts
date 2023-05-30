@@ -18,3 +18,8 @@ export const requestVoicePermission = createAsyncThunk('app/request-voice', () =
     });
   })
 });
+
+export const switchInputDevice = createAsyncThunk('app/switch-voice-input', (deviceId: string) => {
+
+  return deviceId;
+});

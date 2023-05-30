@@ -1,5 +1,20 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Alert, Avatar, Button, Card, Form, Input, List, Slider, Space, Tabs, Tooltip, Typography} from "antd";
+import {
+  Alert,
+  Avatar,
+  Button,
+  Card,
+  Form,
+  Input,
+  List,
+  message,
+  Select,
+  Slider,
+  Space,
+  Tabs,
+  Tooltip,
+  Typography
+} from "antd";
 import {Comment} from '@ant-design/compatible'
 import styles from './chat-box.module.css';
 import {AudioMutedOutlined, AudioOutlined, SendOutlined, SoundOutlined} from "@ant-design/icons";
@@ -8,20 +23,21 @@ import moment from "moment"
 import PeerService from "../../../services/peer.service.ts";
 import {addMessage, ChatMessage} from "../../../redux/slices/chat.slice.ts";
 import {Profile} from "../../../redux/slices/app.slice.ts";
-import {requestVoicePermission, toggleMutePeer} from "../../../redux/actions/voice.actions.ts";
+import {requestVoicePermission, switchInputDevice, toggleMutePeer} from "../../../redux/actions/voice.actions.ts";
 
 export default function ChatBox() {
-  const {peers, profile, voicePermitted} = useAppSelector(state => state.app);
+  const {peers, profile, voicePermitted, inputDeviceId} = useAppSelector(state => state.app);
   const {messages} = useAppSelector(state => state.chat);
-  const [message, setMessage] = useState('');
+  const [msg, setMsg] = useState('');
+  const [inputDevices, setInputDevices] = useState<MediaDeviceInfo[]>([]);
   const dispatch = useAppDispatch();
   const bottomRef = useRef<any>(null);
 
   const submitMessage = () => {
-    if (message.trim() === '') return;
+    if (msg.trim() === '') return;
     const msgObject: ChatMessage = {
       author: profile as Profile,
-      text: message,
+      text: msg,
       time: new Date().getTime(),
     };
     dispatch(addMessage(msgObject));
@@ -29,7 +45,7 @@ export default function ChatBox() {
       action: 'message',
       data: msgObject,
     })));
-    setMessage('');
+    setMsg('');
   };
 
   useEffect(() => {
@@ -39,6 +55,41 @@ export default function ChatBox() {
   const requestMicrophoneAccess = () => {
     dispatch(requestVoicePermission());
   }
+
+  const switchDevice = (deviceId: string) => {
+    dispatch(switchInputDevice(deviceId));
+  }
+
+  useEffect(() => {
+    if (voicePermitted && navigator.mediaDevices) {
+      // Enumerate the available devices
+      navigator.mediaDevices.enumerateDevices()
+        .then(function(devices) {
+          // Filter the devices to only those that are audio input devices
+          const audioInputDevices = devices.filter(device => device.kind === 'audioinput');
+          // Log the list of audio input devices
+          setInputDevices(audioInputDevices);
+          if (audioInputDevices.length !== 0) {
+            switchDevice(audioInputDevices[0].deviceId);
+            const myProfile = {
+              ...profile,
+              hasVoice: true,
+            }
+            PeerService.sendAllEncoded({
+              action: 'profile',
+              data: myProfile,
+            });
+          }
+        })
+        .catch(function(err) {
+          // Handle any errors that occur
+          return message.error('Error enumerating devices.');
+        });
+    } else {
+      return message.error('Media devices not supported.');
+    }
+
+  }, [voicePermitted]);
 
   return (
     <Card
@@ -73,27 +124,38 @@ export default function ChatBox() {
                     <Typography.Text>
                       {item.name}
                     </Typography.Text>
-                    <Button shape={'circle'} type={'text'} danger={item.muted}
-                            onClick={() => dispatch(toggleMutePeer(item.connectionId))}>
-                      {item.muted ?
-                        <AudioMutedOutlined/>
-                        : <AudioOutlined/>
-                      }
-                    </Button>
+                    {item.hasVoice && (
+                      <Button shape={'circle'} type={'text'} danger={item.muted}
+                              onClick={() => dispatch(toggleMutePeer(item.connectionId))}>
+                        {item.muted ?
+                          <AudioMutedOutlined/>
+                          : <AudioOutlined/>
+                        }
+                      </Button>
+                    )}
                   </div>
                 )}
               />
             </div>
             <div className={styles.commentAction}>
-              <div style={{flex: 1}}>
-                <Slider/>
+              <Select
+                value={inputDeviceId}
+                style={{width: 200}} onChange={(value) => switchDevice(value)}
+              >
+                {inputDevices.map(device => (
+                  <Select.Option key={device.deviceId} value={device.deviceId}>
+                    {device.label}
+                  </Select.Option>
+                ))}
+              </Select>
+              <div style={{display: 'flex', flexDirection: 'row'}}>
+                <Button type={'text'} shape={'circle'} size={'large'}>
+                  <SoundOutlined/>
+                </Button>
+                <Button type={'text'} shape={'circle'} size={'large'}>
+                  <AudioOutlined/>
+                </Button>
               </div>
-              <Button type={'text'} shape={'circle'} size={'large'}>
-                <SoundOutlined/>
-              </Button>
-              <Button type={'text'} shape={'circle'} size={'large'}>
-                <AudioOutlined/>
-              </Button>
             </div>
           </>
         }, {
@@ -126,8 +188,8 @@ export default function ChatBox() {
             </div>
             <div className={styles.commentAction}>
               <Input
-                value={message}
-                onChange={e => setMessage(e.target.value)}
+                value={msg}
+                onChange={e => setMsg(e.target.value)}
                 className={styles.commentInput}
                 placeholder={'Leave message...'}
                 onPressEnter={e => {
