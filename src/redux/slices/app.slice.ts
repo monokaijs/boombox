@@ -1,5 +1,6 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {setAppProfile} from "../actions/app.actions.ts";
+import {toggleMutePeer} from "../actions/voice.actions.ts";
 
 export interface Profile {
   name?: string;
@@ -66,7 +67,14 @@ export const appSlice = createSlice({
   extraReducers: builder => {
     builder.addCase(setAppProfile.fulfilled, (state, action) => {
       state.profile = action.payload;
-    })
+    }).addCase(toggleMutePeer.fulfilled, (state, action) => {
+      state.peers = state.peers.map(peer => {
+        if (peer.connectionId === action.payload) {
+          peer.muted = !peer.muted;
+        }
+        return peer;
+      })
+    });
   }
 });
 

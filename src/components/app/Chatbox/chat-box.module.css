@@ -15,3 +15,13 @@
 .commentInput {
     margin-right: 8px;
 }
+
+.tabsOuter {
+    height: 100%;
+}
+
+.peerItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}

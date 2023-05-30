@@ -26,3 +26,13 @@ html, body, #root {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+.communication-card .ant-tabs-content.ant-tabs-content-top {
+  height: 100%;
+}
+
+.communication-card .ant-tabs-content .ant-tabs-tabpane-active {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
