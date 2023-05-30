@@ -18,7 +18,6 @@ export default function PlayerCard() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    console.log('new state', state);
     if (state === YouTube.PlayerState.PLAYING) {
       player.current?.internalPlayer.playVideo();
     } else if (state === YouTube.PlayerState.PAUSED) {

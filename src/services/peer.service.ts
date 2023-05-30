@@ -1,9 +1,10 @@
-import Peer, {DataConnection} from "peerjs";
+import Peer, {DataConnection, MediaConnection} from "peerjs";
 import {v4 as uuid} from 'uuid';
 
 type OnConnectionListener = (conn: DataConnection, isIncoming: boolean) => any;
 type OnDataListener = (data: any, conn: DataConnection) => any;
 type OnCloseListener = (conn: DataConnection) => any;
+type OnCallListener = (conn: MediaConnection) => any;
 
 class PeerService {
   client: Peer;
@@ -39,6 +40,16 @@ class PeerService {
     }
   }
 
+  onCall: {
+    listeners: OnCallListener[],
+    addListener: (fn: OnCallListener) => any
+  } = {
+    listeners: [],
+    addListener: (fn) => {
+      this.onCall.listeners.push(fn);
+    }
+  }
+
   initialize(id?: string) {
     if (!id) id = uuid();
     this.id = id;
@@ -62,6 +73,10 @@ class PeerService {
         this.removeConnection(conn);
       })
     });
+
+    this.client.on("call", (call) => {
+      this.onCall.listeners.forEach(fn => fn(call));
+    })
 
     this.client.on("error", error => {
       console.log(error);

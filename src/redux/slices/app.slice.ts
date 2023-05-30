@@ -1,14 +1,17 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {setAppProfile} from "../actions/app.actions.ts";
-import {requestVoicePermission, switchInputDevice, toggleMutePeer} from "../actions/voice.actions.ts";
+import {callPeer, requestVoicePermission, switchInputDevice, toggleMutePeer} from "../actions/voice.actions.ts";
+import {MediaConnection} from "peerjs";
 
 export interface Profile {
+  status?: 'calling' | 'idle';
   name?: string;
   icon?: string;
   username?: string;
   connectionId: string;
   hasVoice?: string;
   voiceConnected?: boolean;
+  voiceConnection?: MediaConnection;
   muted?: boolean;
 }
 
@@ -81,6 +84,22 @@ export const appSlice = createSlice({
       state.voicePermitted = true;
     }).addCase(switchInputDevice.fulfilled, (state, action) => {
       state.inputDeviceId = action.payload;
+    }).addCase(callPeer.pending, (state, action: any) => {
+      console.log('call-peer', action);
+      state.peers = state.peers.map(peer => {
+        if (peer.username === action.meta.arg) {
+          peer.voiceConnected = true;
+        }
+        return peer;
+      });
+    }).addCase(callPeer.fulfilled, (state, action) => {
+      state.peers = state.peers.map(peer => {
+        if (peer.username === action.payload.peerId) {
+          peer.voiceConnection = action.payload.connection;
+          peer.voiceConnected = true;
+        }
+        return peer;
+      })
     });
   }
 });

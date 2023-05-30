@@ -92,9 +92,5 @@ export default function PeerHelper() {
     }
   }, [profile?.username]);
 
-  useEffect(() => {
-    if (peers.length !== 0) console.log('peers', peers);
-  }, [peers]);
-
   return <></>
 }

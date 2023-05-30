@@ -9,6 +9,7 @@ import ProfileCard from "./components/app/Profile";
 import PeerHelper from "./components/helpers/PeerHelper.tsx";
 import ChatBox from "./components/app/Chatbox";
 import PlayerCard from "./components/app/Player";
+import VoiceHelper from "./components/helpers/VoiceHelper.tsx";
 
 function AppContent() {
   return (
@@ -17,6 +18,7 @@ function AppContent() {
         algorithm: theme.darkAlgorithm
       }}
     >
+      <VoiceHelper/>
       <PeerHelper/>
       <AppLayout>
         <Row gutter={8}>

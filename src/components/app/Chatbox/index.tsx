@@ -126,7 +126,7 @@ export default function ChatBox() {
                     </Typography.Text>
                     {item.hasVoice && (
                       <Button shape={'circle'} type={'text'} danger={item.muted}
-                              onClick={() => dispatch(toggleMutePeer(item.connectionId))}>
+                              onClick={() => dispatch(toggleMutePeer(item))}>
                         {item.muted ?
                           <AudioMutedOutlined/>
                           : <AudioOutlined/>
