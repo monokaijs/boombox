@@ -8,6 +8,7 @@ export interface Profile {
   username?: string;
   connectionId: string;
   hasVoice?: string;
+  voiceConnected?: boolean;
   muted?: boolean;
 }
 

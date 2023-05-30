@@ -19,7 +19,13 @@ export const requestVoicePermission = createAsyncThunk('app/request-voice', () =
   })
 });
 
-export const switchInputDevice = createAsyncThunk('app/switch-voice-input', (deviceId: string) => {
-
+export const switchInputDevice = createAsyncThunk('app/switch-voice-input', async (deviceId: string) => {
+  if (navigator.mediaDevices) {
+    // Enumerate the available devices
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const stream = await navigator.mediaDevices.getUserMedia({audio: {deviceId: deviceId}});
+  } else {
+    return Promise.reject('Media devices not supported.');
+  }
   return deviceId;
 });
