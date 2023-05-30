@@ -8,7 +8,7 @@ import moment from "moment"
 import PeerService from "../../../services/peer.service.ts";
 import {addMessage, ChatMessage} from "../../../redux/slices/chat.slice.ts";
 import {Profile} from "../../../redux/slices/app.slice.ts";
-import {toggleMutePeer} from "../../../redux/actions/voice.actions.ts";
+import {requestVoicePermission, toggleMutePeer} from "../../../redux/actions/voice.actions.ts";
 
 export default function ChatBox() {
   const {peers, profile, voicePermitted} = useAppSelector(state => state.app);
@@ -37,15 +37,7 @@ export default function ChatBox() {
   }, [messages]);
 
   const requestMicrophoneAccess = () => {
-    // @ts-ignore
-    navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
-
-    // @ts-ignore
-    navigator.getUserMedia({video: false, audio: true}, function success(localAudioStream) {
-      // Do something with audio stream
-    }, function error(err: any) {
-      // handle error
-    });
+    dispatch(requestVoicePermission());
   }
 
   return (

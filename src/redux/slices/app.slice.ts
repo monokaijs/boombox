@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {setAppProfile} from "../actions/app.actions.ts";
-import {toggleMutePeer} from "../actions/voice.actions.ts";
+import {requestVoicePermission, toggleMutePeer} from "../actions/voice.actions.ts";
 
 export interface Profile {
   name?: string;
@@ -74,6 +74,8 @@ export const appSlice = createSlice({
         }
         return peer;
       })
+    }).addCase(requestVoicePermission.fulfilled, (state, action) => {
+      state.voicePermitted = true;
     });
   }
 });
